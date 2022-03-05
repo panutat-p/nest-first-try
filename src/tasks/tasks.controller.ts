@@ -1,6 +1,14 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from "@nestjs/common";
 import { TasksService } from "./tasks.service";
-import { Task } from "./tasks.model";
+import { Task, TaskStatus } from "./tasks.model";
 import { CreateTaskDto } from "./dto/create-task.dto";
 
 @Controller("tasks")
@@ -23,5 +31,19 @@ export class TasksController {
     // DTO help us when change JSON body, controller remain the same
     console.log("body:", body);
     return this.tasksService.createTask(createTaskDto);
+  }
+
+  @Delete("/:id")
+  deleteTask(@Param("id") id: string): Task {
+    console.log("deleting id", id);
+    return this.tasksService.deleteTask(id);
+  }
+
+  @Patch("/:id/status")
+  updateTaskStatus(
+    @Param("id") id: string,
+    @Body("status") status: TaskStatus,
+  ): Task {
+    return this.tasksService.updateTaskStatus(id, status);
   }
 }
