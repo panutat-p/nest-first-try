@@ -36,7 +36,7 @@ export class TasksService {
     const result = this.tasks.find((task) => task.id === id);
 
     if (!result) {
-      throw new NotFoundException(); // Pipe exception, affect HTTP status code
+      throw new NotFoundException(`task not found, id: ${id}`); // Pipe exception, affect HTTP status code
     }
 
     return result;
