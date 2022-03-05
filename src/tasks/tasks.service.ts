@@ -32,6 +32,9 @@ export class TasksService {
     return tasks;
   }
 
+  /*
+  now handle error when found no item
+   */
   getTaskById(id: string): Task {
     const result = this.tasks.find((task) => task.id === id);
 
@@ -57,14 +60,14 @@ export class TasksService {
   }
 
   deleteTask(id: string): Task {
-    const result = this.tasks.find((task) => task.id === id);
-    this.tasks = this.tasks.filter((task) => task.id !== id);
+    const result = this.getTaskById(id); // handle error
+    this.tasks = this.tasks.filter((task) => task.id !== result.id);
 
     return result;
   }
 
   updateTaskStatus(id: string, status: TaskStatus): Task {
-    const task = this.getTaskById(id);
+    const task = this.getTaskById(id); // handle error
     task.status = status;
     return task;
   }
