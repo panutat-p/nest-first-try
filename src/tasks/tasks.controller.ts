@@ -8,41 +8,33 @@ import {
   Post,
   Query,
 } from "@nestjs/common";
-import { TasksService } from "./tasks.service";
-import { Task } from "./tasks.model";
+import { rowAffected, TasksService } from "./tasks.service";
 import { CreateTaskDto } from "./dto/create-task.dto";
 import { GetTasksFilterDto } from "./dto/get-tasks-filter.dto";
 import { UpdateTaskStatusDto } from "./dto/update-task-status-dto";
+import { Task } from "./task.entity";
 
 @Controller("tasks")
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
   @Get()
-  getAllTasks(@Query() filterDto: GetTasksFilterDto): Task[] {
-    if (Object.keys(filterDto).length) {
-      return this.tasksService.getTasksWithFilters(filterDto);
-    }
-
-    return this.tasksService.getAllTasks();
+  getAllTasks(@Query() filterDto: GetTasksFilterDto): Promise<Task[]> {
+    return this.tasksService.getAllTasks(filterDto);
   }
 
   @Get("/:id")
-  getTaskById(@Param("id") id: string): Task {
-    console.log("id:", id);
+  getTaskById(@Param("id") id: string): Promise<Task> {
     return this.tasksService.getTaskById(id);
   }
 
   @Post()
-  createTask(@Body() body, @Body() createTaskDto: CreateTaskDto): Task {
-    // DTO help us when change JSON body, controller remain the same
-    console.log("body:", body);
+  createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
     return this.tasksService.createTask(createTaskDto);
   }
 
   @Delete("/:id")
-  deleteTask(@Param("id") id: string): Task {
-    console.log("deleting id", id);
+  deleteTask(@Param("id") id: string): Promise<rowAffected> {
     return this.tasksService.deleteTask(id);
   }
 
@@ -50,8 +42,9 @@ export class TasksController {
   updateTaskStatus(
     @Param("id") id: string,
     @Body() updateTaskStatusDto: UpdateTaskStatusDto,
-  ): Task {
+  ): Promise<Task> {
     const { status } = updateTaskStatusDto;
+
     return this.tasksService.updateTaskStatus(id, status);
   }
 }
