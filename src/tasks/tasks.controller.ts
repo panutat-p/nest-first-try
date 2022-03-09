@@ -7,14 +7,17 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import { rowAffected, TasksService } from "./tasks.service";
 import { CreateTaskDto } from "./dto/create-task.dto";
 import { GetTasksFilterDto } from "./dto/get-tasks-filter.dto";
 import { UpdateTaskStatusDto } from "./dto/update-task-status-dto";
 import { Task } from "./task.entity";
+import { AuthGuard } from "@nestjs/passport";
 
 @Controller("tasks")
+// @UseGuards(AuthGuard()) // Authorization
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
@@ -29,16 +32,19 @@ export class TasksController {
   }
 
   @Post()
+  @UseGuards(AuthGuard())
   createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
     return this.tasksService.createTask(createTaskDto);
   }
 
   @Delete("/:id")
+  @UseGuards(AuthGuard())
   deleteTask(@Param("id") id: string): Promise<rowAffected> {
     return this.tasksService.deleteTask(id);
   }
 
   @Patch("/:id/status")
+  @UseGuards(AuthGuard())
   updateTaskStatus(
     @Param("id") id: string,
     @Body() updateTaskStatusDto: UpdateTaskStatusDto,
