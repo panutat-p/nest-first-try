@@ -9,7 +9,7 @@ export class AuthCredentialsDto {
   @IsString()
   @MinLength(8)
   @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-    message: "Password must not include invalid characters",
+    message: "Password is not strong enough",
   })
   password: string;
 }
