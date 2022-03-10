@@ -5,11 +5,13 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { TasksModule } from "./tasks/tasks.module";
 import { AuthModule } from "./auth/auth.module";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { configValidationSchema } from "./config.joi-schema";
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: [`config/.env.stage.${process.env.STAGE}`],
+      validationSchema: configValidationSchema,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
