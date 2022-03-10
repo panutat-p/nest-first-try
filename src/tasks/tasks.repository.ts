@@ -3,9 +3,12 @@ import { Task } from "./task.entity";
 import { CreateTaskDto } from "./dto/create-task.dto";
 import { TaskStatus } from "./tasks-status.enum";
 import { GetTasksFilterDto } from "./dto/get-tasks-filter.dto";
+import { InternalServerErrorException, Logger } from "@nestjs/common";
 
 @EntityRepository(Task)
 export class TasksRepository extends Repository<Task> {
+  private logger = new Logger("TasksRepository", true);
+
   async getTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
     const { status, search } = filterDto;
 
@@ -23,7 +26,12 @@ export class TasksRepository extends Repository<Task> {
       );
     }
 
-    return await query.getMany();
+    try {
+      return await query.getMany();
+    } catch (error) {
+      this.logger.error("cannot fetch from DB", error.stack);
+      throw new InternalServerErrorException();
+    }
   }
 
   async createTask(createTaskDto: CreateTaskDto): Promise<Task> {

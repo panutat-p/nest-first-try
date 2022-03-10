@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { TaskStatus } from "./tasks-status.enum";
 import { CreateTaskDto } from "./dto/create-task.dto";
 import { GetTasksFilterDto } from "./dto/get-tasks-filter.dto";
@@ -12,6 +12,7 @@ https://typeorm.io/#/repository-api
 
 @Injectable()
 export class TasksService {
+  private logger = new Logger("TasksService", true);
   constructor(
     @InjectRepository(TasksRepository)
     private tasksRepository: TasksRepository, // child class of TypeORM
@@ -28,6 +29,7 @@ export class TasksService {
     const tasks = await this.tasksRepository.findOne(id);
 
     if (!tasks) {
+      this.logger.error(`no task with id: ${id}`);
       throw new NotFoundException(`Task not found, id: ${id}`);
     }
 

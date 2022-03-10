@@ -5,10 +5,13 @@ import * as bcrypt from "bcrypt";
 import {
   ConflictException,
   InternalServerErrorException,
+  Logger,
 } from "@nestjs/common";
 
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {
+  private logger = new Logger("UsersRepository");
+
   async createUser(authCredentialsDto: AuthCredentialsDto): Promise<void> {
     const { username, password } = authCredentialsDto;
 
@@ -24,8 +27,13 @@ export class UsersRepository extends Repository<User> {
       await this.save(user);
     } catch (error) {
       if (error.code === "23505") {
+        this.logger.error(
+          `cannot sign up, this username does already exist, error code: ${error.code}`,
+          error.stack,
+        );
         throw new ConflictException("This username does already exist");
       } else {
+        this.logger.error(`cannot sign up`);
         throw new InternalServerErrorException();
       }
     }
